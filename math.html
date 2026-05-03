@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20 以內數學練習題</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .quiz-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .question-item { font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #eee; }
+        input[type="number"] { width: 60px; padding: 5px; font-size: 1rem; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
+        .btn-container { text-align: center; margin-top: 30px; }
+        button { padding: 10px 30px; font-size: 1.2rem; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        #result { margin-top: 20px; text-align: center; font-size: 1.5rem; font-weight: bold; }
+        .correct { color: #28a745; font-weight: bold; }
+        .wrong { color: #dc3545; font-weight: bold; }
+        .ans-hint { font-size: 0.8rem; color: #666; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>20 以內加減乘除練習</h1>
+    <p style="text-align: center;">每次重新整理頁面，都會更換題目喔！</p>
+    
+    <div id="quiz" class="quiz-grid"></div>
+
+    <div class="btn-container">
+        <button onclick="checkAnswers()">送出答案</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const quizContainer = document.getElementById('quiz');
+    const questions = [];
+    const totalQuestions = 100;
+
+    function generateQuestions() {
+        for (let i = 0; i < totalQuestions; i++) {
+            let num1, num2, operator, answer;
+            const type = Math.floor(Math.random() * 4); // 0:+, 1:-, 2:*, 3:/
+
+            switch (type) {
+                case 0: // 加法
+                    num1 = Math.floor(Math.random() * 21);
+                    num2 = Math.floor(Math.random() * (21 - num1));
+                    operator = '+';
+                    answer = num1 + num2;
+                    break;
+                case 1: // 減法
+                    num1 = Math.floor(Math.random() * 21);
+                    num2 = Math.floor(Math.random() * (num1 + 1));
+                    operator = '-';
+                    answer = num1 - num2;
+                    break;
+                case 2: // 乘法
+                    // 為了控制在 20 以內，乘數不宜過大
+                    num1 = Math.floor(Math.random() * 11);
+                    num2 = (num1 === 0) ? Math.floor(Math.random() * 21) : Math.floor(Math.random() * (Math.floor(20 / num1) + 1));
+                    operator = '×';
+                    answer = num1 * num2;
+                    break;
+                case 3: // 除法
+                    answer = Math.floor(Math.random() * 11); // 商
+                    num2 = Math.floor(Math.random() * 9) + 1; // 除數 1-9
+                    num1 = answer * num2; // 被除數
+                    if (num1 > 20) { // 確保被除數在 20 內
+                        num1 = 12; num2 = 3; answer = 4;
+                    }
+                    operator = '÷';
+                    break;
+            }
+
+            questions.push({ num1, num2, operator, answer });
+            
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-item';
+            qDiv.innerHTML = `
+                <span>${i + 1}. ${num1} ${operator} ${num2} = </span>
+                <input type="number" id="ans-${i}">
+                <span id="feedback-${i}"></span>
+            `;
+            quizContainer.appendChild(qDiv);
+        }
+    }
+
+    function checkAnswers() {
+        let score = 0;
+        questions.forEach((q, i) => {
+            const userInput = document.getElementById(`ans-${i}`).value;
+            const feedback = document.getElementById(`feedback-${i}`);
+            
+            if (parseInt(userInput) === q.answer) {
+                score++;
+                feedback.innerHTML = ' <span class="correct">✓</span>';
+            } else {
+                feedback.innerHTML = ` <span class="wrong">✗</span><span class="ans-hint">(${q.answer})</span>`;
+            }
+        });
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `得分：${score} / ${totalQuestions}`;
+        if (score === totalQuestions) {
+            resultDiv.innerHTML += " 🌟 太棒了！全對！";
+        }
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // 初始化題目
+    generateQuestions();
+</script>
+
+</body>
+</html>
